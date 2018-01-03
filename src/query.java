@@ -26,6 +26,9 @@ import java.sql.Statement;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 public class query {
 
@@ -84,8 +87,9 @@ public class query {
 		textField_1 = new JTextField();
 		textField_1.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				textField_1.setText("");
+			public void mousePressed(MouseEvent arg0) {
+				if(textField_1.getText().equals("请在此输入图书信息：图书名称，作者或出版商"))
+					textField_1.setText("");
 				textField_1.setForeground(Color.BLACK);
 			}
 		});
