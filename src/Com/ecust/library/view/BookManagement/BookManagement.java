@@ -103,12 +103,6 @@ public class BookManagement
 		scrollPane.setViewportView(table);
 		table.setBorder(new LineBorder(new Color(0, 0, 0)));
 
-		JComboBox comboBox = new JComboBox();
-		comboBox.setBounds(518, 425, 131, 24);
-		comboBox.setModel(new DefaultComboBoxModel(new String[]
-		{ "\u9875\u6570\uFF1A1" }));
-		frame.getContentPane().add(comboBox);
-
 		JButton button = new JButton("\u67E5\u8BE2");
 		button.setBounds(539, 89, 110, 35);
 		button.setFont(new Font("宋体", Font.PLAIN, 24));
@@ -176,18 +170,20 @@ public class BookManagement
 					// 创建statement类对象，用来执行SQL语句
 					Statement statement = con.createStatement();
 					// 要执行的SQL语句
-					String sql = "select * from book where BookName like '%"+Bookinfo+"%' or Code like '%"+Bookinfo+"%'or Author like '%"+Bookinfo+"%' or Publication like '%"+Bookinfo+"%'";
-					//ResultSet类，用来存放获取的结果集
+					String sql = "select * from book where BookName like '%" + Bookinfo + "%' or Code like '%"
+							+ Bookinfo + "%'or Author like '%" + Bookinfo + "%' or Publication like '%" + Bookinfo
+							+ "%'";
+					// ResultSet类，用来存放获取的结果集
 					ResultSet rs = statement.executeQuery(sql);
-					
-					for(int x=0;x<10;x++)//表初始化
+
+					for (int x = 0; x < 10; x++)// 表初始化
 					{
-						for(int y=0;y<6;y++)
+						for (int y = 0; y < 6; y++)
 						{
-							a[x][y]="";
+							a[x][y] = "";
 						}
 					}
-					
+
 					while (rs.next())// 将数据库中数据写入表中
 					{
 						a[i][0] = rs.getString("Code");
@@ -214,10 +210,10 @@ public class BookManagement
 				{
 					e.printStackTrace();
 				}
-				if(a[0][0]=="")
-	        	{
-	        		JOptionPane.showMessageDialog(button, "未查询到相关书籍！", "抱歉！", 0);
-	        	}
+				if (a[0][0] == "")
+				{
+					JOptionPane.showMessageDialog(button, "未查询到相关书籍！", "抱歉！", 0);
+				}
 			}
 		});
 
@@ -229,8 +225,20 @@ public class BookManagement
 				// 读取表格第一行数据并添加
 				Code = (String) a[0][0];
 				BookName = (String) a[0][1];
-				BookNumber = Integer.parseInt((String) a[0][2]);
-				StoreNumber =Integer.parseInt((String) a[0][3]);
+				if (a[0][2] instanceof String)
+				{
+					BookNumber = Integer.parseInt((String) a[0][2]);
+				} else
+				{
+					BookNumber = (int) a[0][2];
+				}
+				if (a[0][3] instanceof String)
+				{
+					StoreNumber = Integer.parseInt((String) a[0][3]);
+				} else
+				{
+					StoreNumber = (int) a[0][3];
+				}
 				Location = (String) a[0][4];
 				Author = (String) a[0][5];
 				Publication = (String) a[0][6];
@@ -253,9 +261,11 @@ public class BookManagement
 
 					psql.close();
 					con.close();
+					JOptionPane.showMessageDialog(button, "添加成功！", "提示", 0);
 				} catch (SQLException e)
 				{
 					// 数据库连接失败异常处理
+					JOptionPane.showMessageDialog(button, "数据库连接失败", "抱歉！", 0);
 					e.printStackTrace();
 				}
 			}
@@ -278,9 +288,11 @@ public class BookManagement
 
 					psql.close();
 					con.close();
+					JOptionPane.showMessageDialog(button, "删除成功！", "提示", 0);
 				} catch (SQLException e)
 				{
 					// 数据库连接失败异常处理
+					JOptionPane.showMessageDialog(button, "数据库连接失败", "抱歉！", 0);
 					e.printStackTrace();
 				}
 			}
@@ -294,8 +306,20 @@ public class BookManagement
 				// 读取表格第一行数据并修改
 				Code = (String) a[0][0];
 				BookName = (String) a[0][1];
-				BookNumber = Integer.parseInt((String) a[0][2]);
-				StoreNumber =Integer.parseInt((String) a[0][3]);
+				if (a[0][2] instanceof String)
+				{
+					BookNumber = Integer.parseInt((String) a[0][2]);
+				} else
+				{
+					BookNumber = (int) a[0][2];
+				}
+				if (a[0][3] instanceof String)
+				{
+					StoreNumber = Integer.parseInt((String) a[0][3]);
+				} else
+				{
+					StoreNumber = (int) a[0][3];
+				}
 				Location = (String) a[0][4];
 				Author = (String) a[0][5];
 				Publication = (String) a[0][6];
@@ -317,9 +341,11 @@ public class BookManagement
 
 					psql.close();
 					con.close();
+					JOptionPane.showMessageDialog(button, "修改完成！", "提示", 0);
 				} catch (SQLException e)
 				{
 					// 数据库连接失败异常处理
+					JOptionPane.showMessageDialog(button, "数据库连接失败", "抱歉！", 0);
 					e.printStackTrace();
 				}
 			}

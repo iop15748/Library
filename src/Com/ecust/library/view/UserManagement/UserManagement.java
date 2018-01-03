@@ -257,9 +257,11 @@ public class UserManagement
 					
 					psql.close();
 					con.close();
+					JOptionPane.showMessageDialog(button, "添加成功！", "提示", 0);
 				} catch (SQLException e)
 				{
 					// 数据库连接失败异常处理
+					JOptionPane.showMessageDialog(button, "数据库连接失败", "抱歉！", 0);
 					e.printStackTrace();
 				}
 			}
@@ -282,9 +284,11 @@ public class UserManagement
 					
 					psql.close();
 					con.close();
+					JOptionPane.showMessageDialog(button, "删除完成！", "提示", 0);
 				} catch (SQLException e)
 				{
 					// 数据库连接失败异常处理
+					JOptionPane.showMessageDialog(button, "数据库连接失败", "抱歉！", 0);
 					e.printStackTrace();
 				}
 			}
@@ -300,8 +304,18 @@ public class UserManagement
 				Password =   (String) a[0][1];
 				Name =       (String) a[0][2];
 				Class =      (String) a[0][3];
-				Credit =Integer.parseInt((String) a[0][4]);        
-				BookNumber =Integer.parseInt((String) a[0][5]); 
+				if (a[0][4] instanceof String)
+				{
+				Credit =Integer.parseInt((String) a[0][4]);  }
+				else {
+					Credit = (int) a[0][4];
+				}
+				if (a[0][5] instanceof String)
+				{
+				BookNumber =Integer.parseInt((String) a[0][5]); }
+				else {
+					BookNumber = (int) a[0][5];
+				}
 				BorrowBook = (String) a[0][6];
 				try
 				{
@@ -320,9 +334,11 @@ public class UserManagement
 					
 					psql.close();
 					con.close();
+					JOptionPane.showMessageDialog(button, "修改完成！", "提示", 0);
 				} catch (SQLException e)
 				{
 					// 数据库连接失败异常处理
+					JOptionPane.showMessageDialog(button, "数据库连接失败", "抱歉！", 0);
 					e.printStackTrace();
 				}
 			}
