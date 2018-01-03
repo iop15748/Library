@@ -22,6 +22,8 @@ import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class bookmanagement
 {
@@ -133,6 +135,14 @@ public class bookmanagement
 		frame.getContentPane().add(button_4);
 
 		textField = new JTextField();
+		textField.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if(textField.getText().equals("请输入图书编号、书名、作者或出版商信息"))
+					textField.setText("");
+				textField.setForeground(Color.BLACK);
+			}
+		});
 		textField.setBounds(51, 89, 378, 35);
 		textField.setText("请输入图书编号、书名、作者或出版商信息");
 		textField.setForeground(Color.LIGHT_GRAY);

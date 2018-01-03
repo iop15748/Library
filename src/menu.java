@@ -64,6 +64,15 @@ public class menu {
 		frame.getContentPane().add(button);
 		
 		JButton button_1 = new JButton("\u56FE\u4E66\u501F\u9605");
+		button_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				jieShu fanhuijiemian=new jieShu();
+				fanhuijiemian.setVisible(true);
+				frame.setVisible(false);
+
+				
+			}
+		});
 		button_1.setBounds(251, 221, 160, 55);
 		button_1.setFont(new Font("ËÎÌו", Font.PLAIN, 24));
 		frame.getContentPane().add(button_1);
