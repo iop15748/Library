@@ -92,7 +92,7 @@ public class query {
 		textField_1.setForeground(Color.LIGHT_GRAY);
 		textField_1.setText("\u8BF7\u5728\u6B64\u8F93\u5165\u56FE\u4E66\u4FE1\u606F\uFF1A\u56FE\u4E66\u540D\u79F0\uFF0C\u4F5C\u8005\u6216\u51FA\u7248\u5546");
 		textField_1.setBounds(51, 98, 378, 35);
-		textField_1.setFont(new Font("宋体", Font.PLAIN, 16));
+		textField_1.setFont(new Font("宋体", Font.PLAIN, 17));
 		textField_1.setColumns(10);
 		frame.getContentPane().add(textField_1);
 		
@@ -130,48 +130,59 @@ public class query {
 
 		JButton button = new JButton("\u67E5\u8BE2");
 		button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {//查找书目
-				for(int x=0;x<10;x++)//表初始化
+			public void actionPerformed(ActionEvent arg0) {
+				String keyword=textField_1.getText();
+				if(keyword.equals(""))
 				{
-					for(int y=0;y<6;y++)
+					JOptionPane.showMessageDialog(button, "请输入查询内容！", "抱歉！", 0);
+				}
+				else
 					{
-						a[x][y]="";
-					}
+						for(int x=0;x<10;x++)//表初始化
+						{
+							for(int y=0;y<6;y++)
+							{
+								a[x][y]="";
+							}
+						}
+						try
+						{
+							int i=0;
+							String sql="select * from book where BookName like '%"+keyword+"%' or Author like '%"+keyword+"%' or Publication like '%"+keyword+"%'";
+							//模糊查询sql语句
+							Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/Library?"  
+					                + "user=root&password=xxxx1998&useUnicode=true&characterEncoding=UTF8");  
+					        Statement pstmt = conn.createStatement();  
+					        ResultSet rs=pstmt.executeQuery(sql);//数据库连接和执行sql语句
+					       	        
+					        while(rs.next())//将数据库中数据写入表中
+					        {
+					        	a[i][0]=rs.getString("Code");
+					        	a[i][1]=rs.getString("BookName");
+					        	a[i][2]=rs.getString("Location");
+					        	a[i][3]=rs.getString("Author");
+					        	a[i][4]=rs.getString("Publication");
+					        	if(rs.getString("StoreNumber").equals("0"))
+					        		a[i][5]="已被借阅";
+					        	else
+					        		a[i][5]="剩余"+rs.getString("StoreNumber")+"本";
+					        	i++;
+					        	DefaultTableCellRenderer r   = new DefaultTableCellRenderer();   
+					        	r.setHorizontalAlignment(JLabel.CENTER);   
+					        	table.setDefaultRenderer(Object.class, r);//字体居中
+					        	table.updateUI();//刷新表
+					        }
+						}
+						catch(Exception e)  
+						{  
+			               e.printStackTrace();  
+						}
+					
+					if(a[0][0]=="")
+		        	{
+		        		JOptionPane.showMessageDialog(button, "未查询到相关书籍！", "抱歉！", 0);
+		        	}
 				}
-				try
-				{
-					int i=0;
-					String keyword=textField_1.getText();
-					String sql="select * from book where BookName like '%"+keyword+"%' or Author like '%"+keyword+"%' or Publication like '%"+keyword+"%'";
-					//模糊查询sql语句
-					Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/Library?"  
-			                + "user=root&password=xxxx1998&useUnicode=true&characterEncoding=UTF8");  
-			        Statement pstmt = conn.createStatement();  
-			        ResultSet rs=pstmt.executeQuery(sql);//数据库连接和执行sql语句
-			       	        
-			        while(rs.next())//将数据库中数据写入表中
-			        {
-			        	a[i][0]=rs.getString("Code");
-			        	a[i][1]=rs.getString("BookName");
-			        	a[i][2]=rs.getString("Location");
-			        	a[i][3]=rs.getString("Author");
-			        	a[i][4]=rs.getString("Publication");
-			        	a[i][5]="剩余"+rs.getString("StoreNumber")+"本";
-			        	i++;
-			        	DefaultTableCellRenderer r   = new DefaultTableCellRenderer();   
-			        	r.setHorizontalAlignment(JLabel.CENTER);   
-			        	table.setDefaultRenderer(Object.class, r);//字体居中
-			        	table.updateUI();//刷新表
-			        }
-				}
-				catch(Exception e)  
-	    {  
-	        e.printStackTrace();  
-	    } 
-				if(a[0][0]=="")
-	        	{
-	        		JOptionPane.showMessageDialog(button, "未查询到相关书籍！", "抱歉！", 0);
-	        	}
 			}
 		});
 		button.setBounds(484, 98, 110, 35);
