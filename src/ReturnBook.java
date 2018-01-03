@@ -38,7 +38,7 @@ public class ReturnBook
     private float overmoney; 			                       // 计算选中的罚款总额
 	private int booknumber;                                    //初始化获取登录用户的借书数量变量
 	private int credit;                                        //存储用户的信誉积分
-	private String code = "10161831";                          //与登录界面的接口，传递用户卡号
+	private String code = "10161835";                          //与登录界面的接口，传递用户卡号
 	private String driver = "com.mysql.jdbc.Driver";           //不同的数据库需要加载不同的参数，这里加载的是MySQL数据库的驱动      
 	private String url = "jdbc:mysql://localhost:3306/mysql";  // URL指向要访问的数据库名mySql
 	private String user = "root";                              // MySQL配置时的用户名            
@@ -93,17 +93,10 @@ public class ReturnBook
 		lblNewLabel.setBounds(210, 15, 240, 36);
 		frame.getContentPane().add(lblNewLabel);
 		
-		JLabel lblNewLabel_11 = new JLabel("\u7F5A\u6B3E\u91D1\u989D\uFF1A");
-		lblNewLabel_11.setFont(new Font("黑体", Font.PLAIN, 20));
-		lblNewLabel_11.setBounds(210, 442, 354, 23);
-		frame.getContentPane().add(lblNewLabel_11);
-		lblNewLabel_11.setVisible(false);
-		
 		JButton btnNewButton = new JButton("\u786E\u8BA4\u5F52\u8FD8");
 		btnNewButton.setFont(new Font("幼圆", Font.BOLD, 20));
 		btnNewButton.setBounds(541, 478, 122, 51);
 		frame.getContentPane().add(btnNewButton);
-		btnNewButton.setVisible(false);
 		
 		JButton btnNewButton_1 = new JButton("\u8FD4\u56DE");
 		btnNewButton_1.setFont(new Font("幼圆", Font.BOLD, 20));
@@ -168,9 +161,7 @@ public class ReturnBook
 		rdbtnNewRadioButton_9.setFont(new Font("宋体", Font.PLAIN, 20));
 		rdbtnNewRadioButton_9.setBounds(85, 386, 582, 29);
 		frame.getContentPane().add(rdbtnNewRadioButton_9);
-		rdbtnNewRadioButton_9.setVisible(false);
-		
-		
+		rdbtnNewRadioButton_9.setVisible(false);		
 		
 		booknumber = 0;                          //初始化借书数目
 		overmoney = 0;                           //初始化逾期罚款
@@ -208,12 +199,15 @@ public class ReturnBook
            state.close();
    	       conn.close();//关闭Connection类的实例
 		}
-		 catch (Exception e)
+		catch (Exception e)
 	    {
 	       e.printStackTrace();
 	    }
-		if (booknumber == 0)//没有外借书籍时	
-			lblNewLabel.setText("您没有在借的书籍！");	   		
+		if (booknumber == 0)//没有外借书籍时
+		{
+			lblNewLabel.setText("您没有在借的书籍！");
+			btnNewButton.setVisible(false);
+		}
 		else
 		{			
 			Calendar nowDate = new GregorianCalendar();      // 获取当前系统平台下默认的日期、时间和时区  
@@ -228,6 +222,7 @@ public class ReturnBook
 	        char[] borrowbooktimeschar = borrowbooktimes.toCharArray();//临时存储借书时间字符的数组
 	        for(int i = 0 , temp = 0;i < booknumber; i++) 
 	        {
+	        	check[i] = false;
 	        	char[] borrowbooktime_char = new char[10];//临时存储各个借书时间字符的数组
 	        	for(int j = 0; j < 10; j++)//防止内存不正
 	        	    borrowbooktime_char[j] = ' ';
@@ -327,41 +322,22 @@ public class ReturnBook
    	    		int sumday = nowDay - day[i];      //天份之差
    	    		overdays[i] = 365 * sumyear + 30 * summonth + sumday;
 		    }
-			rdbtnNewRadioButton.addMouseListener(new MouseAdapter() 
-			{//选中与否变化罚款金额
+	   	    
+			rdbtnNewRadioButton.addMouseListener(new MouseAdapter()//选中归还图书事件
+			{
 				@Override
 				public void mouseClicked(MouseEvent arg0)
 				{
 	   	           if(rdbtnNewRadioButton.isSelected())
 	   	           {
 	   	        	   check[0] = true;//用数组传递选中状态方便管理
-	   	        	   if(overdays[0] < 0)
-	   	        	   {//选中日期出错的书籍时
-	   	        		   lblNewLabel_11.setText("系统时间出错！");
-	   		   	    	   lblNewLabel_11.setVisible(true);
-	   		   	    	   btnNewButton.setVisible(false);
-	   	        	   }
-	   	        	   else if(overdays[0] > 30)
+                       if(overdays[0] > 30)
 	   	        	   {
 	   	        		   credit -= 5;
 	   	        		   overmoney += (float) (0.5 * (overdays[0] - 30));
-	   		   	    	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-	   		   	    	   lblNewLabel_11.setVisible(true);
-	   		   	           btnNewButton.setVisible(true);
-	   	        	   }
-	   	        	   else if(overmoney > 0)
-	   	        	   {
-		   		   	   	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-		   		   	   	   lblNewLabel_11.setVisible(true);
-		   		   	   	   btnNewButton.setVisible(true);
-	   	        	   }
-	   	        	   else
-	   	        	   {
-		   		   	   	   lblNewLabel_11.setVisible(false);
-		   		   	   	   btnNewButton.setVisible(true);
-	   	        	   } 	        		   
+	   	        	   }   		   
 	   	           }
-	   	           else
+	   	           else if(booknumber > 0)
 	   	           {
 	   	        	   check[0] = false;	
 	   	        	   if(overdays[0] > 30)
@@ -369,632 +345,245 @@ public class ReturnBook
 	   	        		   credit += 5;
 	   	        	       overmoney -= (float) (0.5 * (overdays[0] - 30));
 	   	        	   }
-	   	        	   if(overmoney > 0)
+	   	           }
+	   	        }
+			});
+			rdbtnNewRadioButton_1.addMouseListener(new MouseAdapter()//选中归还图书事件
+			{
+				@Override
+				public void mouseClicked(MouseEvent arg0)
+				{
+	   	           if(rdbtnNewRadioButton_1.isSelected())
+	   	           {
+	   	        	   check[1] = true;//用数组传递选中状态方便管理
+                       if(overdays[1] > 30)
 	   	        	   {
-			   		   	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-			   		   	   lblNewLabel_11.setVisible(true);
-		   		   	   	   btnNewButton.setVisible(true);
-	   	        	   }	
-	   	        	   else
+	   	        		   credit -= 5;
+	   	        		   overmoney += (float) (0.5 * (overdays[1] - 30));
+	   	        	   }   		   
+	   	           }
+	   	           else if(booknumber > 1)
+	   	           {
+	   	        	   check[1] = false;	
+	   	        	   if(overdays[1] > 30)
 	   	        	   {
-	   	        		   int i = 0;
-	   	        		   lblNewLabel_11.setVisible(true);
-	   	        		   for(; i < booknumber; )	   	        		   
-	   	        			   if(check[i])
-	   	        				   i++;
-	   	        		   if(i == 0)
-	   	        		   {
-			   		   	   	   btnNewButton.setVisible(false);
-			   		   	   	   lblNewLabel_11.setVisible(false);
-	   	        		   }
-			   		   	   else
-			   		   	   	   btnNewButton.setVisible(true);
+	   	        		   credit += 5;
+	   	        	       overmoney -= (float) (0.5 * (overdays[1] - 30));
 	   	        	   }
 	   	           }
 	   	        }
 			});
-			rdbtnNewRadioButton_1.addMouseListener(new MouseAdapter() 
+			rdbtnNewRadioButton_2.addMouseListener(new MouseAdapter()//选中归还图书事件
 			{
 				@Override
-				public void mouseClicked(MouseEvent arg0) 
+				public void mouseClicked(MouseEvent arg0)
 				{
-		   	           if(rdbtnNewRadioButton_1.isSelected())
-		   	           {
-		   	        	   check[1] = true;//用数组传递选中状态方便管理
-		   	        	   if(overdays[1] < 0)
-		   	        	   {//选中日期出错的书籍时
-		   	        		   lblNewLabel_11.setText("系统时间出错！");
-		   		   	    	   lblNewLabel_11.setVisible(true);
-		   		   	    	   btnNewButton.setVisible(false);
-		   	        	   }
-		   	        	   else if(overdays[1] > 30)
-		   	        	   {
-		   	        		   credit -= 5;
-		   	        		   overmoney += (float) (0.5 * (overdays[1] - 30));
-		   		   	    	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-		   		   	    	   lblNewLabel_11.setVisible(true);
-		   		   	           btnNewButton.setVisible(true);
-		   	        	   }
-		   	        	   else if(overmoney > 0)
-		   	        	   {
-			   		   	   	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-			   		   	   	   lblNewLabel_11.setVisible(true);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }
-		   	        	   else
-		   	        	   {
-			   		   	   	   lblNewLabel_11.setVisible(false);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   } 	        		   
-		   	           }
-		   	           else
-		   	           {
-		   	        	   check[1] = false;	
-		   	        	   if(overdays[1] > 30)
-		   	        	   {
-		   	        		  credit += 5;
-		   	        	      overmoney -= (float) (0.5 * (overdays[1] - 30));
-		   	        	   }
-		   	        	   if(overmoney > 0)
-		   	        	   {
-				   		   	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-				   		   	   lblNewLabel_11.setVisible(true);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }	
-		   	        	   else
-		   	        	   {
-		   	        		   int i = 0;
-		   	        		   lblNewLabel_11.setVisible(true);
-		   	        		   for(; i < booknumber; )	   	        		   
-		   	        			   if(check[i])
-		   	        				   i++;
-		   	        		   if(i == 0)
-		   	        		   {
-				   		   	   	   btnNewButton.setVisible(false);
-				   		   	   	   lblNewLabel_11.setVisible(false);
-		   	        		   }
-				   		   	   else
-				   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }
-		   	           }
-				}
+	   	           if(rdbtnNewRadioButton_2.isSelected())
+	   	           {
+	   	        	   check[2] = true;//用数组传递选中状态方便管理
+                       if(overdays[2] > 30)
+	   	        	   {
+	   	        		   credit -= 5;
+	   	        		   overmoney += (float) (0.5 * (overdays[2] - 30));
+	   	        	   }   		   
+	   	           }
+	   	           else if(booknumber > 2)
+	   	           {
+	   	        	   check[2] = false;	
+	   	        	   if(overdays[2] > 30)
+	   	        	   {
+	   	        		   credit += 5;
+	   	        	       overmoney -= (float) (0.5 * (overdays[2] - 30));
+	   	        	   }
+	   	           }
+	   	        }
 			});
-			rdbtnNewRadioButton_2.addMouseListener(new MouseAdapter() 
+			rdbtnNewRadioButton_3.addMouseListener(new MouseAdapter()//选中归还图书事件
 			{
 				@Override
-				public void mouseClicked(MouseEvent arg0) 
+				public void mouseClicked(MouseEvent arg0)
 				{
-		   	           if(rdbtnNewRadioButton_2.isSelected())
-		   	           {
-		   	        	   check[2] = true;//用数组传递选中状态方便管理
-		   	        	   if(overdays[2] < 0)
-		   	        	   {//选中日期出错的书籍时
-		   	        		   lblNewLabel_11.setText("系统时间出错！");
-		   		   	    	   lblNewLabel_11.setVisible(true);
-		   		   	    	   btnNewButton.setVisible(false);
-		   	        	   }
-		   	        	   else if(overdays[2] > 30)
-		   	        	   {
-		   	        		   credit -= 5;
-		   	        		   overmoney += (float) (0.5 * (overdays[2] - 30));
-		   		   	    	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-		   		   	    	   lblNewLabel_11.setVisible(true);
-		   		   	           btnNewButton.setVisible(true);
-		   	        	   }
-		   	        	   else if(overmoney > 0)
-		   	        	   {
-			   		   	   	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-			   		   	   	   lblNewLabel_11.setVisible(true);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }
-		   	        	   else
-		   	        	   {
-			   		   	   	   lblNewLabel_11.setVisible(false);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   } 	        		   
-		   	           }
-		   	           else
-		   	           {
-		   	        	   check[2] = false;	
-		   	        	   if(overdays[2] > 30)
-		   	        	   {
-		   	        	       overmoney -= (float) (0.5 * (overdays[2] - 30));
-		   	        		   credit += 5;
-		   	        	   }
-		   	        	   if(overmoney > 0)
-		   	        	   {
-				   		   	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-				   		   	   lblNewLabel_11.setVisible(true);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }	
-		   	        	   else
-		   	        	   {
-		   	        		   int i = 0;
-		   	        		   lblNewLabel_11.setVisible(true);
-		   	        		   for(; i < booknumber; )	   	        		   
-		   	        			   if(check[i])
-		   	        				   i++;
-		   	        		   if(i == 0)
-		   	        		   {
-				   		   	   	   btnNewButton.setVisible(false);
-				   		   	   	   lblNewLabel_11.setVisible(false);
-		   	        		   }
-				   		   	   else
-				   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }
-		   	           }
-				}
+	   	           if(rdbtnNewRadioButton_3.isSelected())
+	   	           {
+	   	        	   check[3] = true;//用数组传递选中状态方便管理
+                       if(overdays[3] > 30)
+	   	        	   {
+	   	        		   credit -= 5;
+	   	        		   overmoney += (float) (0.5 * (overdays[3] - 30));
+	   	        	   }   		   
+	   	           }
+	   	           else if(booknumber > 3)
+	   	           {
+	   	        	   check[3] = false;	
+	   	        	   if(overdays[3] > 30)
+	   	        	   {
+	   	        		   credit += 5;
+	   	        	       overmoney -= (float) (0.5 * (overdays[3] - 30));
+	   	        	   }
+	   	           }
+	   	        }
 			});
-			rdbtnNewRadioButton_3.addMouseListener(new MouseAdapter() 
+			rdbtnNewRadioButton_4.addMouseListener(new MouseAdapter()//选中归还图书事件
 			{
 				@Override
-				public void mouseClicked(MouseEvent arg0) 
+				public void mouseClicked(MouseEvent arg0)
 				{
-		   	           if(rdbtnNewRadioButton_3.isSelected())
-		   	           {
-		   	        	   check[3] = true;//用数组传递选中状态方便管理
-		   	        	   if(overdays[3] < 0)
-		   	        	   {//选中日期出错的书籍时
-		   	        		   lblNewLabel_11.setText("系统时间出错！");
-		   		   	    	   lblNewLabel_11.setVisible(true);
-		   		   	    	   btnNewButton.setVisible(false);
-		   	        	   }
-		   	        	   else if(overdays[3] > 30)
-		   	        	   {
-		   	        		   credit -= 5;
-		   	        		   overmoney += (float) (0.5 * (overdays[3] - 30));
-		   		   	    	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-		   		   	    	   lblNewLabel_11.setVisible(true);
-		   		   	           btnNewButton.setVisible(true);
-		   	        	   }
-		   	        	   else if(overmoney > 0)
-		   	        	   {
-			   		   	   	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-			   		   	   	   lblNewLabel_11.setVisible(true);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }
-		   	        	   else
-		   	        	   {
-			   		   	   	   lblNewLabel_11.setVisible(false);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   } 	        		   
-		   	           }
-		   	           else
-		   	           {
-		   	        	   check[3] = false;	
-		   	        	   if(overdays[3] > 30)
-		   	        	   {
-		   	        	       overmoney -= (float) (0.5 * (overdays[3] - 30));
-		   	        		   credit += 5;
-		   	        	   }
-		   	        	   if(overmoney > 0)
-		   	        	   {
-				   		   	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-				   		   	   lblNewLabel_11.setVisible(true);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }	
-		   	        	   else
-		   	        	   {
-		   	        		   int i = 0;
-		   	        		   lblNewLabel_11.setVisible(true);
-		   	        		   for(; i < booknumber; )	   	        		   
-		   	        			   if(check[i])
-		   	        				   i++;
-		   	        		   if(i == 0)
-		   	        		   {
-				   		   	   	   btnNewButton.setVisible(false);
-				   		   	   	   lblNewLabel_11.setVisible(false);
-		   	        		   }
-				   		   	   else
-				   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }
-		   	           }
-				}
+	   	           if(rdbtnNewRadioButton_4.isSelected())
+	   	           {
+	   	        	   check[4] = true;//用数组传递选中状态方便管理
+                       if(overdays[4] > 30)
+	   	        	   {
+	   	        		   credit -= 5;
+	   	        		   overmoney += (float) (0.5 * (overdays[4] - 30));
+	   	        	   }   		   
+	   	           }
+	   	           else if(booknumber > 4)
+	   	           {
+	   	        	   check[4] = false;	
+	   	        	   if(overdays[4] > 30)
+	   	        	   {
+	   	        		   credit += 5;
+	   	        	       overmoney -= (float) (0.5 * (overdays[4] - 30));
+	   	        	   }
+	   	           }
+	   	        }
 			});
-			rdbtnNewRadioButton_4.addMouseListener(new MouseAdapter() 
+			rdbtnNewRadioButton_5.addMouseListener(new MouseAdapter()//选中归还图书事件
 			{
 				@Override
-				public void mouseClicked(MouseEvent arg0) 
+				public void mouseClicked(MouseEvent arg0)
 				{
-		   	           if(rdbtnNewRadioButton_4.isSelected())
-		   	           {
-		   	        	   check[0] = true;//用数组传递选中状态方便管理
-		   	        	   if(overdays[4] < 0)
-		   	        	   {//选中日期出错的书籍时
-		   	        		   lblNewLabel_11.setText("系统时间出错！");
-		   		   	    	   lblNewLabel_11.setVisible(true);
-		   		   	    	   btnNewButton.setVisible(false);
-		   	        	   }
-		   	        	   else if(overdays[4] > 30)
-		   	        	   {
-		   	        		   credit -= 5;
-		   	        		   overmoney += (float) (0.5 * (overdays[4] - 30));
-		   		   	    	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-		   		   	    	   lblNewLabel_11.setVisible(true);
-		   		   	           btnNewButton.setVisible(true);
-		   	        	   }
-		   	        	   else if(overmoney > 0)
-		   	        	   {
-			   		   	   	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-			   		   	   	   lblNewLabel_11.setVisible(true);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }
-		   	        	   else
-		   	        	   {
-			   		   	   	   lblNewLabel_11.setVisible(false);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   } 	        		   
-		   	           }
-		   	           else
-		   	           {
-		   	        	   check[4] = false;	
-		   	        	   if(overdays[4] > 30)
-		   	        	   {
-		   	        	      overmoney -= (float) (0.5 * (overdays[4] - 30));
-		   	        		   credit += 5;
-		   	        	   }
-		   	        	   if(overmoney > 0)
-		   	        	   {
-				   		   	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-				   		   	   lblNewLabel_11.setVisible(true);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }	
-		   	        	   else
-		   	        	   {
-		   	        		   int i = 0;
-		   	        		   lblNewLabel_11.setVisible(true);
-		   	        		   for(; i < booknumber; )	   	        		   
-		   	        			   if(check[i])
-		   	        				   i++;
-		   	        		   if(i == 0)
-		   	        		   {
-				   		   	   	   btnNewButton.setVisible(false);
-				   		   	   	   lblNewLabel_11.setVisible(false);
-		   	        		   }
-				   		   	   else
-				   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }
-		   	           }
-				}
+	   	           if(rdbtnNewRadioButton_5.isSelected())
+	   	           {
+	   	        	   check[5] = true;//用数组传递选中状态方便管理
+                       if(overdays[5] > 30)
+	   	        	   {
+	   	        		   credit -= 5;
+	   	        		   overmoney += (float) (0.5 * (overdays[5] - 30));
+	   	        	   }   		   
+	   	           }
+	   	           else if(booknumber > 5)
+	   	           {
+	   	        	   check[5] = false;	
+	   	        	   if(overdays[5] > 30)
+	   	        	   {
+	   	        		   credit += 5;
+	   	        	       overmoney -= (float) (0.5 * (overdays[5] - 30));
+	   	        	   }
+	   	           }
+	   	        }
 			});
-			rdbtnNewRadioButton_5.addMouseListener(new MouseAdapter() 
+			rdbtnNewRadioButton_6.addMouseListener(new MouseAdapter()//选中归还图书事件
 			{
 				@Override
-				public void mouseClicked(MouseEvent arg0) 
+				public void mouseClicked(MouseEvent arg0)
 				{
-		   	           if(rdbtnNewRadioButton_5.isSelected())
-		   	           {
-		   	        	   check[5] = true;//用数组传递选中状态方便管理
-		   	        	   if(overdays[5] < 0)
-		   	        	   {//选中日期出错的书籍时
-		   	        		   lblNewLabel_11.setText("系统时间出错！");
-		   		   	    	   lblNewLabel_11.setVisible(true);
-		   		   	    	   btnNewButton.setVisible(false);
-		   	        	   }
-		   	        	   else if(overdays[5] > 30)
-		   	        	   {
-		   	        		   credit -= 5;
-		   	        		   overmoney += (float) (0.5 * (overdays[5] - 30));
-		   		   	    	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-		   		   	    	   lblNewLabel_11.setVisible(true);
-		   		   	           btnNewButton.setVisible(true);
-		   	        	   }
-		   	        	   else if(overmoney > 0)
-		   	        	   {
-			   		   	   	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-			   		   	   	   lblNewLabel_11.setVisible(true);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }
-		   	        	   else
-		   	        	   {
-			   		   	   	   lblNewLabel_11.setVisible(false);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   } 	        		   
-		   	           }
-		   	           else
-		   	           {
-		   	        	   check[5] = false;	
-		   	        	   if(overdays[5] > 30)
-		   	        	   {
-		   	        	       overmoney -= (float) (0.5 * (overdays[5] - 30));
-		   	        		   credit += 5;
-		   	        	   }
-		   	        	   if(overmoney > 0)
-		   	        	   {
-				   		   	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-				   		   	   lblNewLabel_11.setVisible(true);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }	
-		   	        	   else
-		   	        	   {
-		   	        		   int i = 0;
-		   	        		   lblNewLabel_11.setVisible(true);
-		   	        		   for(; i < booknumber; )	   	        		   
-		   	        			   if(check[i])
-		   	        				   i++;
-		   	        		   if(i == 0)
-		   	        		   {
-				   		   	   	   btnNewButton.setVisible(false);
-				   		   	   	   lblNewLabel_11.setVisible(false);
-		   	        		   }
-				   		   	   else
-				   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }
-		   	           }
-				}
+	   	           if(rdbtnNewRadioButton_6.isSelected())
+	   	           {
+	   	        	   check[6] = true;//用数组传递选中状态方便管理
+                       if(overdays[6] > 30)
+	   	        	   {
+	   	        		   credit -= 5;
+	   	        		   overmoney += (float) (0.5 * (overdays[6] - 30));
+	   	        	   }   		   
+	   	           }
+	   	           else if(booknumber > 6)
+	   	           {
+	   	        	   check[6] = false;	
+	   	        	   if(overdays[6] > 30)
+	   	        	   {
+	   	        		   credit += 5;
+	   	        	       overmoney -= (float) (0.5 * (overdays[6] - 30));
+	   	        	   }
+	   	           }
+	   	        }
 			});
-			rdbtnNewRadioButton_6.addMouseListener(new MouseAdapter() 
+			rdbtnNewRadioButton_7.addMouseListener(new MouseAdapter()//选中归还图书事件
 			{
 				@Override
-				public void mouseClicked(MouseEvent arg0) 
+				public void mouseClicked(MouseEvent arg0)
 				{
-		   	           if(rdbtnNewRadioButton_6.isSelected())
-		   	           {
-		   	        	   check[6] = true;//用数组传递选中状态方便管理
-		   	        	   if(overdays[6] < 0)
-		   	        	   {//选中日期出错的书籍时
-		   	        		   lblNewLabel_11.setText("系统时间出错！");
-		   		   	    	   lblNewLabel_11.setVisible(true);
-		   		   	    	   btnNewButton.setVisible(false);
-		   	        	   }
-		   	        	   else if(overdays[6] > 30)
-		   	        	   {
-		   	        		   credit -= 5;
-		   	        		   overmoney += (float) (0.5 * (overdays[6] - 30));
-		   		   	    	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-		   		   	    	   lblNewLabel_11.setVisible(true);
-		   		   	           btnNewButton.setVisible(true);
-		   	        	   }
-		   	        	   else if(overmoney > 0)
-		   	        	   {
-			   		   	   	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-			   		   	   	   lblNewLabel_11.setVisible(true);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }
-		   	        	   else
-		   	        	   {
-			   		   	   	   lblNewLabel_11.setVisible(false);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   } 	        		   
-		   	           }
-		   	           else
-		   	           {
-		   	        	   check[6] = false;	
-		   	        	   if(overdays[6] > 30)
-		   	        	   {
-		   	        	      overmoney -= (float) (0.5 * (overdays[6] - 30));
-		   	        		   credit += 5;
-		   	        	   }
-		   	        	   if(overmoney > 0)
-		   	        	   {
-				   		   	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-				   		   	   lblNewLabel_11.setVisible(true);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }	
-		   	        	   else
-		   	        	   {
-		   	        		   int i = 0;
-		   	        		   lblNewLabel_11.setVisible(true);
-		   	        		   for(; i < booknumber; )	   	        		   
-		   	        			   if(check[i])
-		   	        				   i++;
-		   	        		   if(i == 0)
-		   	        		   {
-				   		   	   	   btnNewButton.setVisible(false);
-				   		   	   	   lblNewLabel_11.setVisible(false);
-		   	        		   }
-				   		   	   else
-				   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }
-		   	           }
-				}
+	   	           if(rdbtnNewRadioButton_7.isSelected())
+	   	           {
+	   	        	   check[7] = true;//用数组传递选中状态方便管理
+                       if(overdays[7] > 30)
+	   	        	   {
+	   	        		   credit -= 5;
+	   	        		   overmoney += (float) (0.5 * (overdays[7] - 30));
+	   	        	   }   		   
+	   	           }
+	   	           else if(booknumber > 7)
+	   	           {
+	   	        	   check[7] = false;	
+	   	        	   if(overdays[7] > 30)
+	   	        	   {
+	   	        		   credit += 5;
+	   	        	       overmoney -= (float) (0.5 * (overdays[7] - 30));
+	   	        	   }
+	   	           }
+	   	        }
 			});
-			rdbtnNewRadioButton_7.addMouseListener(new MouseAdapter() 
+			rdbtnNewRadioButton_8.addMouseListener(new MouseAdapter()//选中归还图书事件
 			{
 				@Override
-				public void mouseClicked(MouseEvent arg0) 
+				public void mouseClicked(MouseEvent arg0)
 				{
-		   	           if(rdbtnNewRadioButton_7.isSelected())
-		   	           {
-		   	        	   check[7] = true;//用数组传递选中状态方便管理
-		   	        	   if(overdays[7] < 0)
-		   	        	   {//选中日期出错的书籍时
-		   	        		   lblNewLabel_11.setText("系统时间出错！");
-		   		   	    	   lblNewLabel_11.setVisible(true);
-		   		   	    	   btnNewButton.setVisible(false);
-		   	        	   }
-		   	        	   else if(overdays[7] > 30)
-		   	        	   {
-		   	        		   credit -= 5;
-		   	        		   overmoney += (float) (0.5 * (overdays[7] - 30));
-		   		   	    	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-		   		   	    	   lblNewLabel_11.setVisible(true);
-		   		   	           btnNewButton.setVisible(true);
-		   	        	   }
-		   	        	   else if(overmoney > 0)
-		   	        	   {
-			   		   	   	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-			   		   	   	   lblNewLabel_11.setVisible(true);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }
-		   	        	   else
-		   	        	   {
-			   		   	   	   lblNewLabel_11.setVisible(false);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   } 	        		   
-		   	           }
-		   	           else
-		   	           {
-		   	        	   check[7] = false;	
-		   	        	   if(overdays[7] > 30)
-		   	        	   {
-		   	        	      overmoney -= (float) (0.5 * (overdays[7] - 30));
-		   	        		   credit += 5;
-		   	        	   }
-		   	        	   if(overmoney > 0)
-		   	        	   {
-				   		   	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-				   		   	   lblNewLabel_11.setVisible(true);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }	
-		   	        	   else
-		   	        	   {
-		   	        		   int i = 0;
-		   	        		   lblNewLabel_11.setVisible(true);
-		   	        		   for(; i < booknumber; )	   	        		   
-		   	        			   if(check[i])
-		   	        				   i++;
-		   	        		   if(i == 0)
-		   	        		   {
-				   		   	   	   btnNewButton.setVisible(false);
-				   		   	   	   lblNewLabel_11.setVisible(false);
-		   	        		   }
-				   		   	   else
-				   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }
-		   	           }
-				}
+	   	           if(rdbtnNewRadioButton_8.isSelected())
+	   	           {
+	   	        	   check[8] = true;//用数组传递选中状态方便管理
+                       if(overdays[8] > 30)
+	   	        	   {
+	   	        		   credit -= 5;
+	   	        		   overmoney += (float) (0.5 * (overdays[8] - 30));
+	   	        	   }   		   
+	   	           }
+	   	           else if(booknumber > 8)
+	   	           {
+	   	        	   check[8] = false;	
+	   	        	   if(overdays[8] > 30)
+	   	        	   {
+	   	        		   credit += 5;
+	   	        	       overmoney -= (float) (0.5 * (overdays[8] - 30));
+	   	        	   }
+	   	           }
+	   	        }
 			});
-			rdbtnNewRadioButton_8.addMouseListener(new MouseAdapter() 
+			rdbtnNewRadioButton_9.addMouseListener(new MouseAdapter()//选中归还图书事件
 			{
 				@Override
-				public void mouseClicked(MouseEvent arg0) 
+				public void mouseClicked(MouseEvent arg0)
 				{
-		   	           if(rdbtnNewRadioButton_8.isSelected())
-		   	           {
-		   	        	   check[8] = true;//用数组传递选中状态方便管理
-		   	        	   if(overdays[8] < 0)
-		   	        	   {//选中日期出错的书籍时
-		   	        		   lblNewLabel_11.setText("系统时间出错！");
-		   		   	    	   lblNewLabel_11.setVisible(true);
-		   		   	    	   btnNewButton.setVisible(false);
-		   	        	   }
-		   	        	   else if(overdays[8] > 30)
-		   	        	   {
-		   	        		   credit -= 5;
-		   	        		   overmoney += (float) (0.5 * (overdays[8] - 30));
-		   		   	    	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-		   		   	    	   lblNewLabel_11.setVisible(true);
-		   		   	           btnNewButton.setVisible(true);
-		   	        	   }
-		   	        	   else if(overmoney > 0)
-		   	        	   {
-			   		   	   	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-			   		   	   	   lblNewLabel_11.setVisible(true);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }
-		   	        	   else
-		   	        	   {
-			   		   	   	   lblNewLabel_11.setVisible(false);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   } 	        		   
-		   	           }
-		   	           else
-		   	           {
-		   	        	   check[8] = false;	
-		   	        	   if(overdays[8] > 30)
-		   	        	   {
-		   	        	       overmoney -= (float) (0.5 * (overdays[8] - 30));
-		   	        		   credit += 5;
-		   	        	   }
-		   	        	   if(overmoney > 0)
-		   	        	   {
-				   		   	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-				   		   	   lblNewLabel_11.setVisible(true);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }	
-		   	        	   else
-		   	        	   {
-		   	        		   int i = 0;
-		   	        		   lblNewLabel_11.setVisible(true);
-		   	        		   for(; i < booknumber; )	   	        		   
-		   	        			   if(check[i])
-		   	        				   i++;
-		   	        		   if(i == 0)
-		   	        		   {
-				   		   	   	   btnNewButton.setVisible(false);
-				   		   	   	   lblNewLabel_11.setVisible(false);
-		   	        		   }
-				   		   	   else
-				   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }
-		   	           }
-				}
+	   	           if(rdbtnNewRadioButton_9.isSelected())
+	   	           {
+	   	        	   check[9] = true;//用数组传递选中状态方便管理
+                       if(overdays[9] > 30)
+	   	        	   {
+	   	        		   credit -= 5;
+	   	        		   overmoney += (float) (0.5 * (overdays[9] - 30));
+	   	        	   }   		   
+	   	           }
+	   	           else if(booknumber > 9)
+	   	           {
+	   	        	   check[9] = false;	
+	   	        	   if(overdays[9] > 30)
+	   	        	   {
+	   	        		   credit += 5;
+	   	        	       overmoney -= (float) (0.5 * (overdays[9] - 30));
+	   	        	   }
+	   	           }
+	   	        }
 			});
-			rdbtnNewRadioButton_9.addMouseListener(new MouseAdapter() 
-			{
-				@Override
-				public void mouseClicked(MouseEvent arg0) 
-				{
-		   	           if(rdbtnNewRadioButton_9.isSelected())
-		   	           {
-		   	        	   check[9] = true;//用数组传递选中状态方便管理
-		   	        	   if(overdays[9] < 0)
-		   	        	   {//选中日期出错的书籍时
-		   	        		   lblNewLabel_11.setText("系统时间出错！");
-		   		   	    	   lblNewLabel_11.setVisible(true);
-		   		   	    	   btnNewButton.setVisible(false);
-		   	        	   }
-		   	        	   else if(overdays[9] > 30)
-		   	        	   {
-		   	        		   credit -= 5;
-		   	        		   overmoney += (float) (0.5 * (overdays[9] - 30));
-		   		   	    	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-		   		   	    	   lblNewLabel_11.setVisible(true);
-		   		   	           btnNewButton.setVisible(true);
-		   	        	   }
-		   	        	   else if(overmoney > 0)
-		   	        	   {
-			   		   	   	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-			   		   	   	   lblNewLabel_11.setVisible(true);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }
-		   	        	   else
-		   	        	   {
-			   		   	   	   lblNewLabel_11.setVisible(false);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   } 	        		   
-		   	           }
-		   	           else
-		   	           {
-		   	        	   check[9] = false;	
-		   	        	   if(overdays[9] > 30)
-		   	        	   {
-		   	        	       overmoney -= (float) (0.5 * (overdays[9] - 30));
-		   	        		   credit += 5;
-		   	        	   }
-		   	        	   if(overmoney > 0)
-		   	        	   {
-				   		   	   lblNewLabel_11.setText("罚款金额：" + overmoney + " RMB");
-				   		   	   lblNewLabel_11.setVisible(true);
-			   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }	
-		   	        	   else
-		   	        	   {
-		   	        		   int i = 0;
-		   	        		   lblNewLabel_11.setVisible(true);
-		   	        		   for(; i < booknumber; )	   	        		   
-		   	        			   if(check[i])
-		   	        				   i++;
-		   	        		   if(i == 0)
-		   	        		   {
-				   		   	   	   btnNewButton.setVisible(false);
-				   		   	   	   lblNewLabel_11.setVisible(false);
-		   	        		   }
-				   		   	   else
-				   		   	   	   btnNewButton.setVisible(true);
-		   	        	   }
-		   	           }
-				}
-			});
+			
 			btnNewButton.addActionListener(new ActionListener()//确认还书事件
 			{
 				public void actionPerformed(ActionEvent arg0)
 				{
+					int temp = 0;                     //判断有无选中图书
+					boolean error = false;            //判断更新数据是否成功
 					String updateborrowbooks = "";    //更新后的用户借书序号存放空间
 					String updateborrowbooktimes = "";//更新后的用户借书时间存放空间
 					int updatebooknumber = booknumber;//更新后的用户借书数量存放空间
-					for(int i = 0, temp = 0; i < booknumber; i++)
+					for(int i = 0; i < booknumber; i++)
 						if(check[i])//选择勾选的图书
 						{
 							updatebooknumber--; //更新借书数量
@@ -1029,6 +618,7 @@ public class ReturnBook
 						    catch(Exception e)
 					        {
 						       e.printStackTrace();
+						       error = true;
 					        }														
 					}
 					else//未选择的图书
@@ -1050,10 +640,10 @@ public class ReturnBook
 				    Class.forName(driver);
 		            Connection conn = DriverManager.getConnection(url,user,password);
 		            String Sql = "update reader set Credit = '" + credit +
-		            		"' BookNumber = '" + updatebooknumber + 
-		            		"' BorrowBook = '" + updateborrowbooks +
-		            		"' BorrowBookTime = '" + updateborrowbooktimes + 
-		            		"'where Code='"+code+"'";
+		            		"',BookNumber = '" + updatebooknumber + 
+		            		"',BorrowBook = '" + updateborrowbooks +
+		            		"',BorrowBookTime = '" + updateborrowbooktimes + 
+		            		"' where Code='"+code+"'";
 			        Statement pstmt = conn.createStatement(); 
 			   		pstmt.executeUpdate(Sql);//更新数据的SQL语句执行
 					pstmt.close();
@@ -1062,11 +652,23 @@ public class ReturnBook
 			    catch(Exception e)
 				{
 				    e.printStackTrace();
-			    }	
+				    error = true;
+				}	
+				if(temp == booknumber)
+					 JOptionPane.showMessageDialog(null, "请选择归还图书！", "操作提示", JOptionPane.ERROR_MESSAGE);
+				else if(error)
+				    JOptionPane.showMessageDialog(null, "未知错误[!]：请再尝试一次！", "还书失败提示", JOptionPane.ERROR_MESSAGE);
+				else 
+				{
+					if(overmoney <= 0)
+				    	JOptionPane.showMessageDialog(null, "您已成功归还选中图书！\n您的信用积分为"+credit, "还书成功提示", JOptionPane.ERROR_MESSAGE);
+					else
+						JOptionPane.showMessageDialog(null, "您已成功归还选中图书！\n书本逾期费用为 "+overmoney+
+								" RMB\n您的信用积分为"+credit,"还书成功提示", JOptionPane.ERROR_MESSAGE);	
+					
+				}
 			}
 			});
 		}
-	}
-	 
-	
+	}	
 }
