@@ -34,11 +34,11 @@ import java.awt.event.KeyEvent;
 
 public class ReturnBook
 {
-	private JFrame frame;
+	public JFrame frame;
     private float overmoney; 			                       // 计算选中的罚款总额
 	private int booknumber;                                    //初始化获取登录用户的借书数量变量
 	private int credit;                                        //存储用户的信誉积分
-	private String code = "10161835";                          //与登录界面的接口，传递用户卡号
+	private String code = "10161831";                          //与登录界面的接口，传递用户卡号
 	private String driver = "com.mysql.jdbc.Driver";           //不同的数据库需要加载不同的参数，这里加载的是MySQL数据库的驱动      
 	private String url = "jdbc:mysql://localhost:3306/mysql";  // URL指向要访问的数据库名mySql
 	private String user = "root";                              // MySQL配置时的用户名            
@@ -578,14 +578,15 @@ public class ReturnBook
 			{
 				public void actionPerformed(ActionEvent arg0)
 				{
-					int temp = 0;                     //判断有无选中图书
+					boolean choosestate = false;      //判断有无选中图书
 					boolean error = false;            //判断更新数据是否成功
 					String updateborrowbooks = "";    //更新后的用户借书序号存放空间
 					String updateborrowbooktimes = "";//更新后的用户借书时间存放空间
 					int updatebooknumber = booknumber;//更新后的用户借书数量存放空间
-					for(int i = 0; i < booknumber; i++)
+					for(int i = 0, temp = 0; i < booknumber; i++)
 						if(check[i])//选择勾选的图书
 						{
+							choosestate = true;
 							updatebooknumber--; //更新借书数量
 						    int storenumber = 0;//设置存储对应图书的在馆数量
 							try
@@ -626,15 +627,16 @@ public class ReturnBook
 						temp++;
 						if(temp == 1)
 						{
-							updateborrowbooks.concat(borrowbookcode[i]);
-							updateborrowbooktimes.concat(borrowbooktime[i]);
+							updateborrowbooks = updateborrowbooks.concat(borrowbookcode[i]);
+							updateborrowbooktimes = updateborrowbooktimes.concat(borrowbooktime[i]);
 						}
 						else
 						{
-							updateborrowbooks.concat(";".concat(borrowbookcode[i]));
-					        updateborrowbooktimes.concat(";".concat(borrowbooktime[i]));
+							updateborrowbooks = updateborrowbooks.concat(";".concat(borrowbookcode[i]));
+					        updateborrowbooktimes = updateborrowbooktimes.concat(";".concat(borrowbooktime[i]));
 						}
 					}
+				if(choosestate)//有图书被选中时
 				try
 				{//更新用户的借阅信息
 				    Class.forName(driver);
@@ -653,9 +655,9 @@ public class ReturnBook
 				{
 				    e.printStackTrace();
 				    error = true;
-				}	
-				if(temp == booknumber)
-					 JOptionPane.showMessageDialog(null, "请选择归还图书！", "操作提示", JOptionPane.ERROR_MESSAGE);
+				}
+				if(!choosestate)
+					JOptionPane.showMessageDialog(null, "请选择图书！", "操作提示", JOptionPane.ERROR_MESSAGE);
 				else if(error)
 				    JOptionPane.showMessageDialog(null, "未知错误[!]：请再尝试一次！", "还书失败提示", JOptionPane.ERROR_MESSAGE);
 				else 
@@ -665,9 +667,27 @@ public class ReturnBook
 					else
 						JOptionPane.showMessageDialog(null, "您已成功归还选中图书！\n书本逾期费用为 "+overmoney+
 								" RMB\n您的信用积分为"+credit,"还书成功提示", JOptionPane.ERROR_MESSAGE);	
-					
-				}
+					//返回菜单代码
+					/**
+					 * frame.setVisible(false);
+				       menu window = new menu();
+				       window.frame.setVisible(true);
+					 */
+					}
+				
 			}
+			});
+			btnNewButton_1.addActionListener(new ActionListener()//返回事件
+			{
+				public void actionPerformed(ActionEvent arg0) 
+				{
+					//返回菜单代码
+					/**
+					 * frame.setVisible(false);
+				       menu window = new menu();
+				       window.frame.setVisible(true);
+					 */
+				}
 			});
 		}
 	}	
