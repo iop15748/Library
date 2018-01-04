@@ -25,8 +25,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class bookmanagement
-{
+public class bookmanagement {
 
 	public JFrame frame;
 	private JTextField textField;
@@ -39,18 +38,13 @@ public class bookmanagement
 	int BookNumber = 0;
 	int StoreNumber = 0;
 
-	public static void main(String[] args)
-	{
-		EventQueue.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				try
-				{
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
 					bookmanagement window = new bookmanagement();
 					window.frame.setVisible(true);
-				} catch (Exception e)
-				{
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -60,16 +54,14 @@ public class bookmanagement
 	/**
 	 * Create the application.
 	 */
-	public bookmanagement()
-	{
+	public bookmanagement() {
 		initialize();
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize()
-	{
+	private void initialize() {
 		frame = new JFrame();
 		frame.setTitle("\u56FE\u4E66\u9986");
 		frame.setBounds(100, 100, 700, 600);
@@ -87,8 +79,7 @@ public class bookmanagement
 		frame.getContentPane().add(scrollPane);
 
 		Object a[][];
-		Object colname[] =
-		{ "书籍编号", "书名", "总数", "在馆数量", "位置", "作者", "出版社" };
+		Object colname[] = { "书籍编号", "书名", "总数", "在馆数量", "位置", "作者", "出版社" };
 		a = new Object[10][7];
 		table = new JTable(a, colname);
 		table.getColumnModel().getColumn(0).setPreferredWidth(98);
@@ -102,12 +93,6 @@ public class bookmanagement
 		table.setFont(new Font("宋体", Font.PLAIN, 18));
 		scrollPane.setViewportView(table);
 		table.setBorder(new LineBorder(new Color(0, 0, 0)));
-
-		JComboBox comboBox = new JComboBox();
-		comboBox.setBounds(518, 425, 131, 24);
-		comboBox.setModel(new DefaultComboBoxModel(new String[]
-		{ "\u9875\u6570\uFF1A1" }));
-		frame.getContentPane().add(comboBox);
 
 		JButton button = new JButton("\u67E5\u8BE2");
 		button.setBounds(539, 89, 110, 35);
@@ -138,7 +123,7 @@ public class bookmanagement
 		textField.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				if(textField.getText().equals("请输入图书编号、书名、作者或出版商信息"))
+				if (textField.getText().equals("请输入图书编号、书名、作者或出版商信息"))
 					textField.setText("");
 				textField.setForeground(Color.BLACK);
 			}
@@ -153,28 +138,24 @@ public class bookmanagement
 		// 驱动程序名
 		String driver = "com.mysql.jdbc.Driver";
 		// URL指向要访问的数据库名
-		String url = "jdbc:mysql://localhost:444/test";
+		String url = "jdbc:mysql://localhost:3306/library";
 		// MySQL配置时的用户名
 		String user = "root";
 		// MySQL配置时的密码
-		String password = "password123";
+		String password = "xxxx1998";
 
-		button.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent event)
-			{
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
 				// 声明Connection对象
 
 				for (int x = 0; x < 10; x++)// 表初始化
 				{
-					for (int y = 0; y < 7; y++)
-					{
+					for (int y = 0; y < 7; y++) {
 						a[x][y] = "";
 					}
 				}
 
-				try
-				{
+				try {
 					String Bookinfo = textField.getText();
 					int i = 0;
 
@@ -184,18 +165,19 @@ public class bookmanagement
 					// 创建statement类对象，用来执行SQL语句
 					Statement statement = con.createStatement();
 					// 要执行的SQL语句
-					String sql = "select * from book where BookName like '%"+Bookinfo+"%' or Code like '%"+Bookinfo+"%'or Author like '%"+Bookinfo+"%' or Publication like '%"+Bookinfo+"%'";
-					//ResultSet类，用来存放获取的结果集
+					String sql = "select * from book where BookName like '%" + Bookinfo + "%' or Code like '%"
+							+ Bookinfo + "%'or Author like '%" + Bookinfo + "%' or Publication like '%" + Bookinfo
+							+ "%'";
+					// ResultSet类，用来存放获取的结果集
 					ResultSet rs = statement.executeQuery(sql);
-					
-					for(int x=0;x<10;x++)//表初始化
+
+					for (int x = 0; x < 10; x++)// 表初始化
 					{
-						for(int y=0;y<6;y++)
-						{
-							a[x][y]="";
+						for (int y = 0; y < 6; y++) {
+							a[x][y] = "";
 						}
 					}
-					
+
 					while (rs.next())// 将数据库中数据写入表中
 					{
 						a[i][0] = rs.getString("Code");
@@ -213,37 +195,57 @@ public class bookmanagement
 					}
 					rs.close();
 					con.close();
-				} catch (SQLException e)
-				{
+				} catch (SQLException e) {
 					// 数据库连接失败异常处理
 					JOptionPane.showMessageDialog(button, "数据库连接失败", "抱歉！", 0);
 					e.printStackTrace();
-				} catch (Exception e)
-				{
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				if(a[0][0]=="")
-	        	{
-	        		JOptionPane.showMessageDialog(button, "未查询到相关书籍！", "抱歉！", 0);
-	        	}
+				if (a[0][0] == "") {
+					JOptionPane.showMessageDialog(button, "未查询到相关书籍！", "抱歉！", 0);
+				}
 			}
 		});
 
 		button_1.addActionListener(new ActionListener()// 添加按钮
 		{
-			public void actionPerformed(ActionEvent event)
-			{
+			public void actionPerformed(ActionEvent event) {
 				PreparedStatement psql;
 				// 读取表格第一行数据并添加
 				Code = (String) a[0][0];
 				BookName = (String) a[0][1];
-				BookNumber = Integer.parseInt((String) a[0][2]);
-				StoreNumber =Integer.parseInt((String) a[0][3]);
+				if (a[0][2] instanceof String)
+
+				{
+
+					BookNumber = Integer.parseInt((String) a[0][2]);
+
+				} else
+
+				{
+
+					BookNumber = (int) a[0][2];
+
+				}
+
+				if (a[0][3] instanceof String)
+
+				{
+
+					StoreNumber = Integer.parseInt((String) a[0][3]);
+
+				} else
+
+				{
+
+					StoreNumber = (int) a[0][3];
+
+				}
 				Location = (String) a[0][4];
 				Author = (String) a[0][5];
 				Publication = (String) a[0][6];
-				try
-				{
+				try {
 					Connection con;
 					con = DriverManager.getConnection(url, user, password);
 
@@ -261,9 +263,10 @@ public class bookmanagement
 
 					psql.close();
 					con.close();
-				} catch (SQLException e)
-				{
+					JOptionPane.showMessageDialog(button, "添加成功！", "提示", 0);
+				} catch (SQLException e) {
 					// 数据库连接失败异常处理
+					JOptionPane.showMessageDialog(button, "数据库连接失败", "抱歉！", 0);
 					e.printStackTrace();
 				}
 			}
@@ -271,12 +274,10 @@ public class bookmanagement
 
 		button_2.addActionListener(new ActionListener()// 删除按钮
 		{
-			public void actionPerformed(ActionEvent event)
-			{
+			public void actionPerformed(ActionEvent event) {
 				// 删除所输入图书编号所对应记录
 				String BookCode = textField.getText();
-				try
-				{
+				try {
 					PreparedStatement psql;
 					Connection con;
 					con = DriverManager.getConnection(url, user, password);
@@ -286,9 +287,10 @@ public class bookmanagement
 
 					psql.close();
 					con.close();
-				} catch (SQLException e)
-				{
+					JOptionPane.showMessageDialog(button, "删除完成！", "提示", 0);
+				} catch (SQLException e) {
 					// 数据库连接失败异常处理
+					JOptionPane.showMessageDialog(button, "数据库连接失败", "抱歉！", 0);
 					e.printStackTrace();
 				}
 			}
@@ -296,19 +298,42 @@ public class bookmanagement
 
 		button_4.addActionListener(new ActionListener()// 修改按钮
 		{
-			public void actionPerformed(ActionEvent event)
-			{
+			public void actionPerformed(ActionEvent event) {
 				PreparedStatement psql;
 				// 读取表格第一行数据并修改
 				Code = (String) a[0][0];
 				BookName = (String) a[0][1];
-				BookNumber = Integer.parseInt((String) a[0][2]);
-				StoreNumber =Integer.parseInt((String) a[0][3]);
+				if (a[0][2] instanceof String)
+
+				{
+
+					BookNumber = Integer.parseInt((String) a[0][2]);
+
+				} else
+
+				{
+
+					BookNumber = (int) a[0][2];
+
+				}
+
+				if (a[0][3] instanceof String)
+
+				{
+
+					StoreNumber = Integer.parseInt((String) a[0][3]);
+
+				} else
+
+				{
+
+					StoreNumber = (int) a[0][3];
+
+				}
 				Location = (String) a[0][4];
 				Author = (String) a[0][5];
 				Publication = (String) a[0][6];
-				try
-				{
+				try {
 					Connection con;
 					con = DriverManager.getConnection(url, user, password);
 
@@ -325,9 +350,10 @@ public class bookmanagement
 
 					psql.close();
 					con.close();
-				} catch (SQLException e)
-				{
+					JOptionPane.showMessageDialog(button, "修改完成！", "提示", 0);
+				} catch (SQLException e) {
 					// 数据库连接失败异常处理
+					JOptionPane.showMessageDialog(button, "数据库连接失败", "抱歉！", 0);
 					e.printStackTrace();
 				}
 			}
@@ -335,8 +361,7 @@ public class bookmanagement
 
 		button_3.addActionListener(new ActionListener()// 返回按钮
 		{
-			public void actionPerformed(ActionEvent event)
-			{
+			public void actionPerformed(ActionEvent event) {
 				frame.setVisible(false);
 				menu1 window = new menu1();
 				window.frame.setVisible(true);

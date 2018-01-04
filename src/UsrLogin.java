@@ -34,7 +34,7 @@ public class UsrLogin extends JFrame{
 	    String sql="select *from user where code='"+code+"' and password='"+password+"'";  
 	    try(  
 	        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?"  
-	                + "user=root&password=xxxx1998&useUnicode=true&characterEncoding=UTF8");  
+	                + "user=root&password=xxxx1998&useUnicode=true&characterEncoding=UTF8&useSSL=false");  
 	        Statement pstmt = conn.createStatement();  
 	            ResultSet rs=pstmt.executeQuery(sql))  
 	      

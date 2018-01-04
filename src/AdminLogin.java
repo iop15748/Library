@@ -21,7 +21,7 @@ public class AdminLogin extends JFrame {
 	}
 	public boolean check(String code, String password) //登录验证 
 	{  
-	    String sql="select *from user where code='"+code+"' and password='"+password+"'";  
+	    String sql="select *from admin where code='"+code+"' and password='"+password+"'";  
 	    try(  
 	        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?"  
 	                + "user=root&password=xxxx1998&useUnicode=true&characterEncoding=UTF8");  
@@ -96,10 +96,11 @@ public class AdminLogin extends JFrame {
 			//	}
 				
 				// success login
-				if (accessBackDoor || !check(userName,password)) {
-					JOptionPane.showMessageDialog(AdminLogin.this, "登陆失败");
+				if (accessBackDoor || check(userName,password)) {
+					JOptionPane.showMessageDialog(AdminLogin.this, "登陆成功");
 					AdminLogin.this.dispose();
-					menu window = new menu1();
+					menu1 window = new menu1();
+					window.frame.setVisible(true);
 				} else {
 					// Wrong info. provided
 					JOptionPane.showMessageDialog(AdminLogin.this, "对不起,输入错误!");

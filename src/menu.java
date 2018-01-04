@@ -78,6 +78,14 @@ public class menu {
 		frame.getContentPane().add(button_1);
 		
 		JButton button_2 = new JButton("\u56FE\u4E66\u5F52\u8FD8");
+		button_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.setVisible(false);
+				returnbook window = new returnbook();
+				window.frame.setVisible(true);
+				
+			}
+		});
 		button_2.setFont(new Font("ËÎÌו", Font.PLAIN, 24));
 		button_2.setBounds(251, 321, 160, 55);
 		frame.getContentPane().add(button_2);

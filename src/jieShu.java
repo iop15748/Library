@@ -17,6 +17,8 @@ import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+
+import org.omg.IOP.Codec;
 /**
  *
  * @author 29155
@@ -198,12 +200,17 @@ public class jieShu extends javax.swing.JFrame {
     }                                           
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {                                         
-        //在这里返回主界面// TODO add your handling code here:
+  
+		menu window=new menu();
+		window.frame.setVisible(true);
+		this.setVisible(false);
     }                                        
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {                                         
         String bookId = jTextField1.getText();
         int bookid=1;
+        int Credit=0;
+        int BookNumber=0;
         int storeNumber =0 ;
         if(bookId.length()==0){
             JOptionPane.showMessageDialog(null,"输入图书编号不能为空");
@@ -211,14 +218,15 @@ public class jieShu extends javax.swing.JFrame {
         else{
             try{ 
                 Class.forName("com.mysql.jdbc.Driver");
-                String url="jdbc:mysql://localhost:3306/tushuguan";    
+                String url="jdbc:mysql://localhost:3306/library";    
                 Connection conn=null ;
                 PreparedStatement psta=null;
                 ResultSet rs=null;
-                conn = DriverManager.getConnection(url,"root","root");
+                conn = DriverManager.getConnection(url,"root","xxxx1998");
                 Statement stmt = conn.createStatement();
                 String sql;
-                sql = "SELECT bookname,booknumber,storenumber,location,auther,publication FROM book WHERE code = ?";
+                sql = "SELECT BookName,BookNumber,StoreNumber,Location,Author,Publication FROM book WHERE Code = ?";
+                String sql3 = "select Credit,BookNumber from user where Code = ?";
                 psta=conn.prepareStatement(sql); 
                 psta.setString(1, bookId);
                 rs=psta.executeQuery();  
@@ -235,6 +243,13 @@ public class jieShu extends javax.swing.JFrame {
                 else{
                     bookid=0;
                 }
+                psta=conn.prepareStatement(sql3); 
+                psta.setString(1, User.currentUser);
+                rs=psta.executeQuery();
+                if (rs.next()){
+                	Credit = rs.getInt(1);
+                	BookNumber = rs.getInt(2);
+                }
                 rs.close();
                 stmt.close();
                 conn.close();
@@ -243,7 +258,13 @@ public class jieShu extends javax.swing.JFrame {
             } catch (SQLException ex) {
                 Logger.getLogger(jieShu.class.getName()).log(Level.SEVERE, null, ex);
             }
-            if(bookid==0){
+            if(Credit<60) {
+            	JOptionPane.showMessageDialog(null,"信用积分不足，无法借书");
+            }
+            else if(BookNumber>=10){
+            	JOptionPane.showMessageDialog(null,"借书数量不能超过十本");
+            }
+            else if(bookid==0){
                 JOptionPane.showMessageDialog(null,"输入图书编号不存在");
             }
             else if(storeNumber<1){
@@ -266,20 +287,20 @@ public class jieShu extends javax.swing.JFrame {
        int Code = Integer.parseInt(User.currentUser);
         try{
             Class.forName("com.mysql.jdbc.Driver");
-            String url = "jdbc:mysql://localhost:3306/tushuguan";
+            String url = "jdbc:mysql://localhost:3306/library";
             Connection conn = null;
             PreparedStatement psta = null;
             ResultSet rs = null;
-            conn = DriverManager.getConnection(url, "root", "root");
+            conn = DriverManager.getConnection(url, "root", "xxxx1998");
             Statement stmt = conn.createStatement();
             String sql;
-            sql = "SELECT storenumber FROM book WHERE code = ?";
+            sql = "SELECT StoreNumber FROM book WHERE Code = ?";
             psta = conn.prepareStatement(sql);
             psta.setString(1, bookId);
             rs = psta.executeQuery();
             if (rs.next()) {
                 int number = Integer.parseInt(rs.getString(1));
-                sql = "update book set storenumber = ? where code = ?";
+                sql = "update book set StoreNumber = ? where Code = ?";
                 PreparedStatement psta2 = conn.prepareStatement(sql);
                 psta2.setInt(1, (number - 1));
                 psta2.setString(2, bookId);
@@ -289,8 +310,8 @@ public class jieShu extends javax.swing.JFrame {
                 psta2.close();
                 System.out.println();
             }
-            String sql1 = "select BookNumber,BorrowBook,BorrowBookTime from reader where Code = ?";
-            String sql2 = "update reader set BookNumber = ?, BorrowBook = ?,BorrowBookTime = ? where Code = ?";
+            String sql1 = "select BookNumber,BorrowBook,BorrowBookTime from user where Code = ?";
+            String sql2 = "update user set BookNumber = ?, BorrowBook = ?,BorrowBookTime = ? where Code = ?";
             psta = conn.prepareStatement(sql1);
             psta.setInt(1, Code);
             rs = psta.executeQuery();
@@ -306,14 +327,26 @@ public class jieShu extends javax.swing.JFrame {
                 String borrowBookTime = rs.getString(3);
                 PreparedStatement psta2 = conn.prepareStatement(sql2);
                 psta2.setInt(1,bookNumber+1);
-                psta2.setString(2,borrowBook+";"+bookId);
-                psta2.setString(3,borrowBookTime+";"+time);
+                if(borrowBook.equals("")) {
+                	psta2.setString(2,borrowBook+bookId);
+                }
+                else {
+                	psta2.setString(2,borrowBook+";"+bookId);
+                }
+                if(borrowBookTime.equals("")) {
+                	psta2.setString(3,borrowBookTime+time);
+                }
+                else {
+                	psta2.setString(3,borrowBookTime+";"+time);
+                }
                 psta2.setInt(4, Code);
                 psta2.addBatch();
                 psta2.executeBatch();
                 psta2.close();
             }
-            //借阅成功后在这里返回主界面
+            menu window=new menu();
+    		window.frame.setVisible(true);
+    		this.setVisible(false);//借阅成功后在这里返回主界面
             rs.close();
             stmt.close();
             conn.close();

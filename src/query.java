@@ -121,13 +121,13 @@ public class query {
 		a=new Object[10][6];
 		table = new JTable(a,colname);
 		table.setEnabled(false);
-		table.getColumnModel().getColumn(0).setPreferredWidth(60);
-		table.getColumnModel().getColumn(1).setPreferredWidth(97);
+		table.getColumnModel().getColumn(0).setPreferredWidth(70);
+		table.getColumnModel().getColumn(1).setPreferredWidth(107);
 		table.getColumnModel().getColumn(2).setPreferredWidth(28);
 		table.getColumnModel().getColumn(3).setPreferredWidth(55);
 		table.getColumnModel().getColumn(4).setPreferredWidth(150);
 		table.setRowHeight(32);
-		table.setFont(new Font("ËÎÌו", Font.PLAIN, 18));
+		table.setFont(new Font("ËÎÌו", Font.PLAIN, 15));
 		scrollPane.setViewportView(table);
 		table.setBorder(new LineBorder(new Color(0, 0, 0)));
 	
